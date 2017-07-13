@@ -7,7 +7,7 @@
 #include <wiring_private.h>                   //added to run 
 #include <math.h>                             //needed for drift calculation                        
 #define  BUFFER_SIZE 15                       //container that sets the size of the packet, sample 15 times and send it (6 from all x y z, acc + gyro)
-#define  FREQUENCY_HZ 50                      //sampling frequency 
+#define  FREQUENCY_HZ 30                      //sampling frequency 
 #define  SCAN_TAG_DELAY 20                    //time for tag detection                   
 #define  wifi_led A1                          //red
 #define  mqtt_led A2                          //yellow
@@ -20,8 +20,8 @@ MPU9250 myIMU;                                //IMU class from MPU9250.h
 const char* ssid = "JARVIS";   //your SSID
 const char* password = "Ilvnyu@99";  
 
-IPAddress ServeR = {52, 204, 229, 101};       // Amazon aws  52.15.200.179 ddev server 
-//IPAddress ServeR = {52, 15, 200, 179};
+//IPAddress ServeR = {52, 204, 229, 101};       // Amazon aws  52.15.200.179 ddev server 
+IPAddress ServeR = {52, 15, 200, 179};
 WiFiClient WIFIclient;                        //creating client for wifi
 PubSubClient client(WIFIclient);              //client for mqtt
 
@@ -55,14 +55,17 @@ int tone_count = 0;
 float  temp_x, temp_y, temp_z, temp_pitch, temp_roll, acceleration;
 float  gyro_x, gyro_y, gyro_z;
 unsigned long millis_stamp;
+unsigned long previousMillis = 0;
+
 const float pi = 3.14159267;
 float time_out = 25;
 boolean tagDetected;                                                                // We can use this to continue program action if our
+boolean buzz;
                                                                                     // reading seems like a real tag was detected.
 char ourTag[10];                                                                    // We will use this to hold the interrogated tag's data.
 String ourTag_st ;
 String tagCheck_1 = "0000000000";
-
+String tagCheck_2;
 
 
 
@@ -79,7 +82,8 @@ void setup()
   Serial.begin (9600);
   Serial1.begin(9600);                                                              //rx on 13
   
-  tagDetected = true;
+  tagDetected = false;
+         buzz = false;
 
   
   byte c = myIMU.readByte(MPU9250_ADDRESS, WHO_AM_I_MPU9250);
@@ -90,7 +94,8 @@ void setup()
     byte d = myIMU.readByte(AK8963_ADDRESS, WHO_AM_I_AK8963);
     myIMU.initAK8963(myIMU.magCalibration);
   }
-  else{
+  else
+  {
     Serial.println("Imu not detected <<< Problem !!!!");  
     tripple_blink(200);                                                             // all blink fast         
     }
@@ -122,18 +127,14 @@ void setup()
 void loop() 
 
 {
+ 
 
- tone_count++;
 
-  scanTag(); 
-  String ourTag_st(ourTag);
+ scanTag(); 
+
   
-  if (ourTag_st != tagCheck_1)
-  {
-    tone(tone_pin,1000);
-    }
-    
-  tagCheck_1 = ourTag_st;
+  
+
   
   
                                         
@@ -211,11 +212,6 @@ void loop()
      
   }
   
-  if(tone_count >=100)
-  {
-  noTone(tone_pin);
-  tone_count = 0;
-  }
 }
 
 
@@ -512,10 +508,7 @@ timeBuffer[buffer_position] = millis_stamp;
 
   
     
-  packetData_1 = ourTag_st;
   
-       packetTotal_1 = "{\"collar_id\": " + collar_id +',' + "\"rfid\":"+ packetData_1 + "}" ;   
-    client.loop();
     
     
     
@@ -529,17 +522,17 @@ timeBuffer[buffer_position] = millis_stamp;
     
     packetTotal += "\"millis\":[" + packetData + packetTail;
     packetTotal.toCharArray(msg, 1032);                                             //convert from string to char array
-    packetTotal_1.toCharArray(tag_msg, 200);
     
-    client.publish  ("fitai", msg);                                                 //send the data
-    client.publish("rfid",tag_msg);
+    
+    //client.publish  ("fitai", msg);                                                 //send the data
+    
     
   
 
     
     Serial.println(msg);
-    Serial.println(tag_msg);
-    packetData_1 = "";
+  
+    
     packetData = "";                                                                //clean the package
     buffer_position = 0;
     
@@ -583,6 +576,7 @@ void scanTag(){
     
     if (Serial1.peek() != 2)
     {
+      tagDetected = false;
       flushSerial1Buffer();     // Flush the buffer to bring it back to an initial, known state.
     }  
     else
@@ -596,21 +590,46 @@ void scanTag(){
       // so nothing needs to be returned! There are other spots in this program
       // where this happens so please keep this in mind.
       
-      fetchTagData(ourTag);   
-     // Serial.print("Your tag says it is: ");   // print tag
+      tagDetected = true;
+      fetchTagData(ourTag);  
+     
+      // Serial.print("Your tag says it is: ");   // print tag
       //Serial.flush();
       //printTag(ourTag);
   }
+ }
+   else
+  {
+    // We don't flush the buffer here since we know the buffer is zero.
+    tagDetected = false;
+  }
+  
  
   if (tagDetected)
   {
-      //Serial.flush();
+    buzz = true;
+      publish_tag(ourTag);
   }
+  else {
+    buzz = false;
+    }
   
  }
    
-}
 
+
+
+void publish_tag(String ourTag)
+{
+  packetData_1 = ourTag;
+  
+    packetTotal_1 = "{\"collar_id\": " + collar_id +',' + "\"rfid\":"+'"' + packetData_1 +'"' + "}" ;   
+    client.loop();
+    packetTotal_1.toCharArray(tag_msg, 200);
+   client.publish("rfid",tag_msg);
+    Serial.println(tag_msg);
+    packetData_1 = "";
+  }
 
 void flushSerial1Buffer() 
 {  
