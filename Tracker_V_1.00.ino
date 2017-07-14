@@ -524,7 +524,7 @@ timeBuffer[buffer_position] = millis_stamp;
     packetTotal.toCharArray(msg, 1032);                                             //convert from string to char array
     
     
-    //client.publish  ("fitai", msg);                                                 //send the data
+    client.publish  ("fitai", msg);                                                 //send the data
     
     
   
