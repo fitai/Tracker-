@@ -413,7 +413,7 @@ dataBuffer_gz[buffer_position] = gyro_z;
          packetData = packetData +','+ dataBuffer_y[i];                             //composing Y packet             
        }
     
-    packetTotal += "\" a_y \":[" + packetData + "]," ;                           //put all the parts of the packet together     ++++++++
+    packetTotal += "\"a_y\":[" + packetData + "]," ;                           //put all the parts of the packet together     ++++++++
   client.loop();                                                               // update the loop, new publish
 
     packetData = dataBuffer_z[0];
@@ -435,7 +435,7 @@ dataBuffer_gz[buffer_position] = gyro_z;
        packetData = packetData + ',' + dataBuffer_gx[i];  
      }
      
-    packetTotal += "\" g_x \":[" + packetData + "]," ;                              //put all the parts of the packet together  
+    packetTotal += "\"g_x\":[" + packetData + "]," ;                              //put all the parts of the packet together  
   client.loop(); 
 
     packetData = dataBuffer_gy[0];
@@ -444,7 +444,7 @@ dataBuffer_gz[buffer_position] = gyro_z;
        packetData = packetData + ',' + dataBuffer_gy[i];  
      }
      
-    packetTotal += "\" g_y \":[" + packetData + "]," ;                              //put all the parts of the packet together     
+    packetTotal += "\"g_y\":[" + packetData + "]," ;                              //put all the parts of the packet together     
   client.loop(); 
   
     packetData = dataBuffer_gz[0];
