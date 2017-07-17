@@ -455,7 +455,7 @@ timeBuffer[buffer_position] = millis_stamp;
          packetData = packetData +','+ dataBuffer_y[i];                             //composing Y packet             
        }
     
-    packetTotal += "\" a_y \":[" + packetData + "]," ;                              //put all the parts of the packet together     ++++++++
+    packetTotal += "\"a_y\":[" + packetData + "]," ;                              //put all the parts of the packet together     ++++++++
   client.loop();                                                                    // update the loop, new publish
 
 
@@ -479,7 +479,7 @@ timeBuffer[buffer_position] = millis_stamp;
        packetData = packetData + ',' + dataBuffer_gx[i];  
      }
      
-    packetTotal += "\" g_x \":[" + packetData + "]," ;                              //put all the parts of the packet together  
+    packetTotal += "\"g_x\":[" + packetData + "]," ;                              //put all the parts of the packet together  
   client.loop(); 
 
 
@@ -491,7 +491,7 @@ timeBuffer[buffer_position] = millis_stamp;
        packetData = packetData + ',' + dataBuffer_gy[i];  
      }
      
-    packetTotal += "\" g_y \":[" + packetData + "]," ;                              //put all the parts of the packet together     
+    packetTotal += "\"g_y\":[" + packetData + "]," ;                              //put all the parts of the packet together     
   client.loop(); 
 
 
