@@ -118,13 +118,14 @@ void setup()
 
   
   byte c = myIMU.readByte(MPU9250_ADDRESS, WHO_AM_I_MPU9250);
-  if (c == 0x71)                                                                    // WHO_AM_I should always be 0x68
+  if (c == 0x73)                                                                    // WHO_AM_I should always be 0x68
   {
     myIMU.MPU9250SelfTest(myIMU.SelfTest);                                          // Start by performing self test and repoas, myIMU.accelBias);
     myIMU.calibrateMPU9250(myIMU.gyroBias, myIMU.accelBias);                        // Calibrate gyro and accelerometers, load biases in bias registers
     myIMU.initMPU9250();
     byte d = myIMU.readByte(AK8963_ADDRESS, WHO_AM_I_AK8963);
     myIMU.initAK8963(myIMU.magCalibration);                                          // Get magnetometer calibration from AK8963 ROM
+  while(true);
   }
   else
   {
