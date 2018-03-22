@@ -438,6 +438,7 @@ timeBuffer[buffer_position] = millis_stamp;
       }
     
     packetTotal += "\"millis\":[" + packetData + packetTail;
+ 
     packetTotal.toCharArray(msg, 1032);                                             //convert from string to char array
     
     
