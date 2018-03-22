@@ -32,7 +32,8 @@ const char* password = "xxxxxx";
 #include <wiring_private.h>                   //added to run 
 #include <math.h>                             //needed for drift calculation 
 
-                       
+
+#define  msg_len 3000               //****** 1032 for buffer len 15 ||| 2000 for buffer len 30 (every time you multiply the buffer by 2 nultiply the length by 2 as well)                                 
 #define  BUFFER_SIZE 15                       //container that sets the size of the packet, sample 15 times and send it (6 from all x y z, acc + gyro)
 #define  FREQUENCY_HZ 30                      //sampling frequency 
 #define  SCAN_TAG_DELAY 20                    //time for tag detection                   
@@ -57,7 +58,7 @@ PubSubClient client(WIFIclient);              //client for mqtt
 
 
 
-char msg[1032];                                                                    // creating the message string packet (1) 
+char msg[msg_len];                                                                    // creating the message string packet (1) 
 char tag_msg[200];                                                                 // creating the tag packet (2)
 float root_mean_square;                                                            // variable for rms (??????)
 float rms_acc;                                                                     // variable for acceleration (why rms????)
@@ -439,7 +440,7 @@ timeBuffer[buffer_position] = millis_stamp;
     
     packetTotal += "\"millis\":[" + packetData + packetTail;
  
-    packetTotal.toCharArray(msg, 1032);                                             //convert from string to char array
+    packetTotal.toCharArray(msg, msg_len);                                             //convert from string to char array
     
     
     client.publish  ("fitai", msg);                                                 //send the data
